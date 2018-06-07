@@ -44,8 +44,8 @@ const start = session=>{
         session.requestAnimationFrame(onframe);
       }
       session.requestAnimationFrame(onframe);
-    }
-  });
+    });
+  };
 };
   
 })();
