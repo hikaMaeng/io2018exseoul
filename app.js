@@ -24,24 +24,40 @@ const start = session=>{
     const scene = RedScene(red);
     const renderer = RedRenderer();
     const camL = RedCamera(), camR = RedCamera();
+    red.world = world;
+		renderer.world = red.world;
 
+    camL.autoUpdateMatrix = camR.autoUpdateMatrix = false;
+    camL.x = camL.y = camL.z = 10
+		camL.lookAt(0,1,0)
+		camR.x = camR.y = camR.z = 10
+		camL.lookAt(0,1,0)
+			
     world.addView(RedView('left', scene, camL));
     RedView('left').setSize('50%', '100%');
-		RedView('left').setLocation('50%', '0%');
+		RedView('left').setLocation('0%', '0%');
     world.addView(RedView('right', scene, camR));
     RedView('right').setSize('50%', '100%');
 		RedView('right').setLocation('50%', '0%');
     
     scene.grid = RedGrid(red);
-
+    let i = 30
+    while(i--){
+      var t0 = RedMesh(red, RedSphere(red),RedColorMaterial(red))
+      t0.x = Math.random()*10 -5
+      t0.y = Math.random()*10 -5
+      t0.z = Math.random()*10 -5
+      scene.addChild(t0)
+    }
+    
     session.baseLayer = new XRWebGLLayer(session, red.gl);
     session.requestFrameOfReference('eyeLevel').then(frameOfRef=>{
       const onframe = (t, frame)=>{
         const session = frame.session;
         const pose = frame.getDevicePose(frameOfRef);
         if(pose){
-          red.gl.bindFramebuffer(gl.FRAMEBUFFER, session.baseLayer.framebuffer);
-          red.gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+          red.gl.bindFramebuffer(red.gl.FRAMEBUFFER, session.baseLayer.framebuffer);
+          red.gl.clear(red.gl.COLOR_BUFFER_BIT | red.gl.DEPTH_BUFFER_BIT);
 
           for(const view of frame.views){
             const viewport = session.baseLayer.getViewport(view);
