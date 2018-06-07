@@ -17,11 +17,20 @@ if(navigator.xr){
 }
 
 const start = session=>{
-  const canvas = document.querySelector('canvas');
-  const red = RedGL(start);
-  const start =_=>{
-    //red의 화면구성 카메라 기초셋팅등..
-    session.baseLayer = new XRWebGLLayer(session, gl);
+  const red = RedGL(document.querySelector('canvas'), start, {compatibleXRDevice:session.device});
+  const start =isOK=>{
+    if(!isOK) return console.log('error');
+
+    const world = RedWorld();
+    const scene = RedScene(red);
+    const cam = RedCamera();
+    const renderer = RedRenderer();
+
+    world.addView(RedView('test', scene, cam));
+
+    const grid = RedGrid(red);
+
+    session.baseLayer = new XRWebGLLayer(session, red.gl);
     session.requestFrameOfReference('eyeLevel').then(frameOfRef=>{
       const onframe = (t, frame)=>{
         const session = frame.session;
