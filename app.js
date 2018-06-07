@@ -18,29 +18,33 @@ if(navigator.xr){
 
 const start = session=>{
   const canvas = document.querySelector('canvas');
-  const gl = canvas.getContext('webgl', {
-    compatibleXRDevice: session.device
-  });
-  session.baseLayer = new XRWebGLLayer(session, gl);
-  session.requestFrameOfReference('eyeLevel').then(frameOfRef=>{
-    const onframe = (t, frame)=>{
-      const session = frame.session;
-      const pose = frame.getDevicePose(frameOfRef);
-      if(pose){
-          gl.bindFramebuffer(gl.FRAMEBUFFER, session.baseLayer.framebuffer);
-          gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        
+  const red = RedGL(start);
+  const start =_=>{
+    //red의 화면구성 카메라 기초셋팅등..
+    session.baseLayer = new XRWebGLLayer(session, gl);
+    session.requestFrameOfReference('eyeLevel').then(frameOfRef=>{
+      const onframe = (t, frame)=>{
+        const session = frame.session;
+        const pose = frame.getDevicePose(frameOfRef);
+        if(pose){
+          red.clear();
+          //gl.bindFramebuffer(gl.FRAMEBUFFER, session.baseLayer.framebuffer);
+          //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
           for(let view of frame.views){
             let viewport = session.baseLayer.getViewport(view);
-            gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
+            red.viewport();
+            red.camera();
+            //gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
             //view.projectionMatrix, pose.getViewMatrix(view)
             // 카메라생성
-            
+
           }
+        }
+        session.requestAnimationFrame(onframe);
       }
       session.requestAnimationFrame(onframe);
     }
-    session.requestAnimationFrame(onframe);
   });
 };
   
