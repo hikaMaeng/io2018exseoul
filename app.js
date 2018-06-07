@@ -1,6 +1,6 @@
 (_=>{
 'use strict';
-const polyfill = new WebXRPolyfill();
+const polyfill = !navigator.xr ? new WebXRPolyfill() : null;
 const xrButton = new XRDeviceButton({
   onRequestSession:device=>device.requestSession({exclusive: true}).then(session=>{
     xrButton.setSession(session);
