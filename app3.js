@@ -35,68 +35,43 @@
 			RedView('right').setSize('50%', '100%');
 			RedView('right').setLocation('50%', '0%');
 			////
-			let tMat = RedEnvironmentMaterial(
+			// scene['postEffectManager'].addEffect(RedPostEffect_Bloom(redGL))
+			// scene['postEffectManager'].addEffect(RedPostEffect_Gray(redGL))
+			let tMat = RedStandardMaterial(
 				redGL,
 				RedBitmapTexture(redGL, 'asset/crate.png'),
-				RedBitmapCubeTexture(redGL, [
-					'asset/cubemap/posx.png',
-					'asset/cubemap/negx.png',
-					'asset/cubemap/posy.png',
-					'asset/cubemap/negy.png',
-					'asset/cubemap/posz.png',
-					'asset/cubemap/negz.png'
-				])
-				, RedBitmapTexture(redGL, 'asset/normalTest.jpg')
-				, RedBitmapTexture(redGL, 'asset/specular.png')
-				, RedBitmapTexture(redGL, 'asset/displacementTest.jpg')
+				RedBitmapTexture(redGL, 'asset/normalTest.jpg'),
+				RedBitmapTexture(redGL, 'asset/brick_roughness.jpg')
 			)
-			let tGeo = RedSphere(redGL, 0.1, 32, 32, 32)
-			let testParticle;
+			let tGeo = RedSphere(redGL, 1, 32, 32, 32)
 			const setScene = function () {
-				let i = 10
 				let tMesh;
 				let testDLight;
 				testDLight = RedDirectionalLight(redGL, '#fff')
 				testDLight.x = 3
 				testDLight.y = 3
 				testDLight.z = 3
-				scene.addLight(testDLight)
-				while ( i-- ) {
-					tMesh = RedMesh(redGL, tGeo, tMat)
-					tMesh.x = Math.sin(Math.PI * 2 / 10 * i) * 3
-					tMesh.y = Math.cos(Math.PI * 2 / 10 * i) * 3
-					tMesh.z = -10
-					scene.addChild(tMesh)
-				}
-				tMesh = RedMesh(redGL, RedSphere(redGL, 1, 32, 32, 32), tMat)
-				tMesh.z = -10
-				scene.addChild(tMesh);
-				// 포인트 클라우드
-				(function () {
-					let testMaterial
-					let interleaveData;
-					testMaterial = RedPointBitmapMaterial(redGL, RedBitmapTexture(redGL, 'asset/particle.png'))
-					interleaveData = []
-					let i = 100000
+				scene.addLight(testDLight);
+				RedOBJLoader(redGL, 'asset/obj/', 'female.obj', function (v) {
+					tMat.shininess = 32
+					var max = 10
+					var i, j
+					i = max
 					while ( i-- ) {
-						interleaveData.push(Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50)
-						interleaveData.push( Math.random() * 50 )
+						j = 10
+						while ( j-- ) {
+							tMesh = RedMesh(redGL, tGeo, tMat)
+							tMesh.x = Math.sin(Math.PI * 2 / (max - 1) * i) * j * 3
+							tMesh.z = Math.cos(Math.PI * 2 / (max - 1) * i) * j * 3 - 10
+							tMesh.y = -3
+							scene.addChild(tMesh)
+						}
 					}
-					interleaveData = new Float32Array(interleaveData)
-					testParticle = RedPointUnit(
-						redGL,
-						interleaveData,
-						[
-							RedInterleaveInfo( 'aVertexPosition', 3 ),
-							RedInterleaveInfo( 'aPointSize', 1 )
-						],
-						testMaterial
-					)
-					testParticle['useDepthTest'] = false
-					testParticle['blendSrc'] = redGL.gl.SRC_ALPHA
-					testParticle['blendDst'] = redGL.gl.ONE
-					scene.addChild(testParticle)
-				})();
+					v['resultMesh'].scaleX = v['resultMesh'].scaleY = v['resultMesh'].scaleZ = 0.025
+					v['resultMesh'].z = -10
+					v['resultMesh'].y = -2
+					scene.addChild(v['resultMesh'])
+				});
 				// scene.grid = RedGrid(redGL);
 				scene.skyBox =
 					RedSkyBox(redGL, [
@@ -125,19 +100,10 @@
 						}
 						renderer.worldRender(redGL, t);
 					}
-					tMat['displacementPower'] = Math.sin(t / 250) / 2
 					let i = scene.children.length
 					let tMesh;
 					while ( i-- ) {
 						tMesh = scene.children[i]
-						if(tMesh == testParticle){
-
-						}else{
-							tMesh.rotationX += 1
-							tMesh.rotationY += 1
-							tMesh.rotationZ += 1
-						}
-
 					}
 					session.requestAnimationFrame(onframe);
 				}
