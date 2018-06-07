@@ -1,6 +1,6 @@
 (_=>{
 'use strict';
-const polyfill = !navigator.xr ? new WebXRPolyfill() : null;
+const polyfill = new WebXRPolyfill();
 const xrButton = new XRDeviceButton({
   onRequestSession:device=>device.requestSession({exclusive: true}).then(session=>{
     xrButton.setSession(session);
@@ -17,18 +17,22 @@ if(navigator.xr){
 }
 
 const start = session=>{
-  const red = RedGL(document.querySelector('canvas'), start, {compatibleXRDevice:session.device});
   const start =isOK=>{
     if(!isOK) return console.log('error');
 
     const world = RedWorld();
     const scene = RedScene(red);
-    const cam = RedCamera();
     const renderer = RedRenderer();
+    const camL = RedCamera(), camR = RedCamera();
 
-    world.addView(RedView('test', scene, cam));
-
-    const grid = RedGrid(red);
+    world.addView(RedView('left', scene, camL));
+    RedView('left').setSize('50%', '100%');
+		RedView('left').setLocation('50%', '0%');
+    world.addView(RedView('right', scene, camR));
+    RedView('right').setSize('50%', '100%');
+		RedView('right').setLocation('50%', '0%');
+    
+    scene.grid = RedGrid(red);
 
     session.baseLayer = new XRWebGLLayer(session, red.gl);
     session.requestFrameOfReference('eyeLevel').then(frameOfRef=>{
@@ -36,25 +40,29 @@ const start = session=>{
         const session = frame.session;
         const pose = frame.getDevicePose(frameOfRef);
         if(pose){
-          red.clear();
-          //gl.bindFramebuffer(gl.FRAMEBUFFER, session.baseLayer.framebuffer);
-          //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+          red.gl.bindFramebuffer(gl.FRAMEBUFFER, session.baseLayer.framebuffer);
+          red.gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-          for(let view of frame.views){
-            let viewport = session.baseLayer.getViewport(view);
-            red.viewport();
-            red.camera();
+          for(const view of frame.views){
+            const viewport = session.baseLayer.getViewport(view);
+            const cam = viewport.x == 0 ? camL : camR;
+            cam.perspectiveMTX = view.projectionMatrix;
+            cam.matrix = pose.getViewMatrix(view);
+          }
+          renderer.worldRender(red, t);
+          
             //gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
             //view.projectionMatrix, pose.getViewMatrix(view)
             // 카메라생성
 
-          }
+          
         }
         session.requestAnimationFrame(onframe);
       }
       session.requestAnimationFrame(onframe);
     });
   };
+  const red = RedGL(document.querySelector('canvas'), start, {compatibleXRDevice:session.device});
 };
   
 })();
