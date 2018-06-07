@@ -35,7 +35,7 @@
 			RedView('right').setSize('50%', '100%');
 			RedView('right').setLocation('50%', '0%');
 			////
-			// scene['postEffectManager'].addEffect(RedPostEffect_Bloom(redGL))
+			scene['postEffectManager'].addEffect(RedPostEffect_Bloom(redGL))
 			// scene['postEffectManager'].addEffect(RedPostEffect_Gray(redGL))
 			let tMat = RedStandardMaterial(
 				redGL,
