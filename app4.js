@@ -35,49 +35,50 @@
 			world.addView(RedView('right', scene, camR));
 			RedView('right').setSize('50%', '100%');
 			RedView('right').setLocation('50%', '0%');
+
 			////
-			scene['postEffectManager'].addEffect(RedPostEffect_Bloom(redGL))
-			// scene['postEffectManager'].addEffect(RedPostEffect_Gray(redGL))
+			// scene['postEffectManager'].addEffect(RedPostEffect_Bloom(redGL))
+			var effect = RedPostEffect_DoF(redGL)
+			// effect.blur = 24
+			effect.focusLength = 10
+			scene['postEffectManager'].addEffect( effect)
 			let tMat = RedStandardMaterial(
 				redGL,
 				RedBitmapTexture(redGL, 'asset/crate.png'),
 				RedBitmapTexture(redGL, 'asset/normalTest.jpg'),
 				RedBitmapTexture(redGL, 'asset/brick_roughness.jpg')
 			)
-			let tGeo = RedSphere(redGL, 1, 24, 24, 24)
+			let tGeo = RedSphere(redGL, 1,24,24,24)
 			let testDLight;
 			const setScene = function () {
 				let tMesh;
-				testDLight = RedDirectionalLight(redGL, '#fff')
+				testDLight = RedDirectionalLight(redGL, '#00ff00')
 				testDLight.x = 3
 				testDLight.y = 3
 				testDLight.z = 3
 				scene.addLight(testDLight);
-				testDLight = RedDirectionalLight(redGL, '#ff00ff',0.3)
-				testDLight.x = 3
+				testDLight = RedDirectionalLight(redGL, '#ff00ff')
+				testDLight.x = -3
 				testDLight.y = 3
 				testDLight.z = 3
 				scene.addLight(testDLight);
-				RedOBJLoader(redGL, 'asset/obj/', 'female.obj', function (v) {
-					tMat.shininess = 32
-					var max = 10
-					var i, j
-					i = max
-					while ( i-- ) {
-						j = 10
-						while ( j-- ) {
-							tMesh = RedMesh(redGL, tGeo, tMat)
-							tMesh.x = Math.sin(Math.PI * 2 / (max - 1) * i) * j * 3
-							tMesh.z = Math.cos(Math.PI * 2 / (max - 1) * i) * j * 3 - 10
-							tMesh.y = -3
-							scene.addChild(tMesh)
+				tMat.shininess = 32
+				let i,j,k
+				let max = 4
+				i = max
+				while ( i-- ) {
+					j = max
+					while ( j-- ) {
+						k = max
+						while ( k-- ) {
+							tMesh = RedMesh( redGL, tGeo, tMat )
+							tMesh.x = (i - max/2) * 5
+							tMesh.y = (j - max/2) * 5
+							tMesh.z = (k - max/2) * 5
+							scene.addChild( tMesh )
 						}
 					}
-					v['resultMesh'].scaleX = v['resultMesh'].scaleY = v['resultMesh'].scaleZ = 0.025
-					v['resultMesh'].z = -10
-					v['resultMesh'].y = -2
-					scene.addChild(v['resultMesh'])
-				});
+				}
 				// scene.grid = RedGrid(redGL);
 				scene.skyBox =
 					RedSkyBox(redGL, [
