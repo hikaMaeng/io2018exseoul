@@ -49,7 +49,7 @@
 			var effect = RedPostEffect_DoF(redGL)
 			// effect.blur = 24
 			effect.focusLength = 10
-			scene['postEffectManager'].addEffect( effect)
+			// scene['postEffectManager'].addEffect( effect)
 			let tMat = RedStandardMaterial(
 				redGL,
 				RedBitmapTexture(redGL, 'asset/crate.png'),
