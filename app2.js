@@ -34,9 +34,9 @@
 			camL.lookAt(0, 1, 0)
 			camR.x = camR.y = camR.z = 10
 			camL.lookAt(0, 1, 0)
-			var tUUID = +RedGL.makeUUID()
-			var tLeftViewName = 'left' + tUUID
-			var tRightViewName = 'right' + tUUID
+			const tUUID = +RedGL.makeUUID()
+			const tLeftViewName = 'left' + tUUID
+			const tRightViewName = 'right' + tUUID
 			world.addView(RedView(tLeftViewName, scene, camL));
 			RedView(tLeftViewName).setSize('50%', '100%');
 			RedView(tLeftViewName).setLocation('0%', '0%');
@@ -118,6 +118,7 @@
 					]);
 			}
 			setScene()
+			redGL.fullMode = false
 			session.baseLayer = new XRWebGLLayer(session, redGL.gl);
 			session.requestFrameOfReference('eyeLevel').then(frameOfRef => {
 				const onframe = (t, frame) => {
@@ -129,6 +130,9 @@
 						for ( const view of frame.views ) {
 							const viewport = session.baseLayer.getViewport(view);
 							const cam = viewport.x == 0 ? camL : camR;
+							const viewName = viewport.x == 0 ? tLeftViewName : tRightViewName
+							RedView(viewName).setSize(viewport.width, viewport.height)
+							RedView(viewName).setLocation(viewport.x, viewport.y)
 							cam.perspectiveMTX = view.projectionMatrix;
 							cam.matrix = pose.getViewMatrix(view);
 						}
@@ -150,7 +154,6 @@
 					}
 					session.requestAnimationFrame(onframe);
 				}
-				redGL.setSize(null, null, true)
 				session.requestAnimationFrame(onframe);
 			});
 		};
