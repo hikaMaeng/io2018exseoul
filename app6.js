@@ -45,8 +45,8 @@
 			RedView(tRightViewName).setLocation('50%', '0%');
 			////
 			// scene['postEffectManager'].addEffect(RedPostEffect_Bloom(redGL))
-			// const effect = RedPostEffect_Gray(redGL)
-			// scene['postEffectManager'].addEffect(effect)
+			const effect = RedPostEffect_Gray(redGL)
+			scene['postEffectManager'].addEffect(effect)
 
 
 			let tMat = RedStandardMaterial(
@@ -103,6 +103,20 @@
 			setScene()
 			redGL.fullMode = false
 			session.baseLayer = new XRWebGLLayer(session, redGL.gl);
+			session.postEffectLayer = new XRWebGLLayer(session, redGL.gl);
+			console.log(session.postEffectLayer)
+			console.log(scene['postEffectManager']['postEffectList'])
+			scene['postEffectManager']['frameBuffer']['webglFrameBuffer'] = session.postEffectLayer.context.createFramebuffer();
+			scene['postEffectManager']['frameBuffer']['webglRenderBuffer'] = session.postEffectLayer.context.createRenderbuffer();
+			scene['postEffectManager']['frameBuffer']['texture']['webglTexture'] = session.postEffectLayer.context.createTexture();
+			scene['postEffectManager']['postEffectList'].forEach(function(v){
+				if(v['frameBuffer']){
+					v['frameBuffer']['webglFrameBuffer'] = session.postEffectLayer.context.createFramebuffer();
+					v['frameBuffer']['webglRenderBuffer'] = session.postEffectLayer.context.createRenderbuffer();
+					v['frameBuffer']['texture']['webglTexture'] = session.postEffectLayer.context.createTexture();
+				}
+
+			})
 
 			session.requestFrameOfReference('eyeLevel').then(frameOfRef => {
 				const onframe = (t, frame) => {
