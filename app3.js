@@ -1,18 +1,18 @@
 (_ => {
 	'use strict';
 	const polyfill = new WebXRPolyfill();
+	const cvs = document.createElement('canvas');
 	const xrButton = new XRDeviceButton({
 		onRequestSession: device => device.requestSession({exclusive: true}).then(session => {
 			xrButton.setSession(session);
-			session.addEventListener('end', e => xrButton.setSession(null));
+			session.addEventListener('end', e => {
+				xrButton.setSession(null)
+				cvs.style.display = 'none'
+			});
 			start(session);
 		}),
-		onEndSession: session => {
-			document.querySelector('canvas').style.display = 'none'
-			session.end()
-		}
+		onEndSession: session => session.end()
 	});
-	const cvs = document.createElement('canvas');
 	[cvs, xrButton.domElement].forEach(el => document.body.appendChild(el));
 	if ( navigator.xr ) {
 		navigator.xr.requestDevice()
