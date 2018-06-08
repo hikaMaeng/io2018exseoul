@@ -65,7 +65,7 @@
 				testDLight.y = 3
 				testDLight.z = 3
 				scene.addLight(testDLight);
-				let i = 200
+				let i = 1000
 				while ( i-- ) {
 					tMesh = RedMesh(redGL, tGeo, tMat)
 					tMesh.x = Math.random() * 100 - 50
@@ -92,6 +92,7 @@
 				const onframe = (t, frame) => {
 					const session = frame.session;
 					const pose = frame.getDevicePose(frameOfRef);
+					t = performance.now()
 					if ( pose ) {
 						redGL.gl.bindFramebuffer(redGL.gl.FRAMEBUFFER, session.baseLayer.framebuffer);
 						redGL.gl.clear(redGL.gl.COLOR_BUFFER_BIT | redGL.gl.DEPTH_BUFFER_BIT);
@@ -104,9 +105,9 @@
 							cam.perspectiveMTX = view.projectionMatrix;
 							cam.matrix = pose.getViewMatrix(view);
 							const t0 = [
-								Math.sin(t / 1500) * 45,
-								Math.cos(t / 1500) * 45,
-								Math.cos(t / 1500) * 45 + Math.sin(t / 500) * 25
+								Math.sin(t / 1500) * 35,
+								Math.cos(t / 1500) * 35,
+								Math.cos(t / 1500) * 35 + Math.sin(t / 500) * 25
 							]
 							cam.x = t0[0]
 							cam.y = t0[1]

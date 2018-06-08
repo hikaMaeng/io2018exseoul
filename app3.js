@@ -104,6 +104,7 @@
 				const onframe = (t, frame) => {
 					const session = frame.session;
 					const pose = frame.getDevicePose(frameOfRef);
+					t = performance.now()
 					if ( pose ) {
 						redGL.gl.bindFramebuffer(redGL.gl.FRAMEBUFFER, session.baseLayer.framebuffer);
 						redGL.gl.clear(redGL.gl.COLOR_BUFFER_BIT | redGL.gl.DEPTH_BUFFER_BIT);
