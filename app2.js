@@ -43,7 +43,6 @@
 			world.addView(RedView('right' + tUUID, scene, camR));
 			RedView(tRightViewName).setSize('50%', '100%');
 			RedView(tRightViewName).setLocation('50%', '0%');
-			////
 			let tMat = RedEnvironmentMaterial(
 				redGL,
 				RedBitmapTexture(redGL, 'asset/crate.png'),
