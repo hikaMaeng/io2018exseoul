@@ -1,6 +1,6 @@
 (_ => {
 	'use strict';
-	const polyfill = new WebXRPolyfill();
+	const polyfill = navigator.xr ? null : new WebXRPolyfill();
 	const xrButton = new XRDeviceButton({
 		onRequestSession: device => device.requestSession({exclusive: true}).then(session => {
 			xrButton.setSession(session);
@@ -10,7 +10,7 @@
 		onEndSession: session => session.end()
 	});
 	[document.createElement('canvas'), xrButton.domElement].forEach(el => document.body.appendChild(el));
-	if ( navigator.xr ) {
+	if(navigator.xr){
 		navigator.xr.requestDevice()
 			.then(device => device.supportsSession({exclusive: true}).then(_ => xrButton.setDevice(device)));
 	}
@@ -21,7 +21,7 @@
 			const scene = RedScene(redGL);
 			const renderer = RedRenderer();
 			const camL = RedCamera(), camR = RedCamera();
-			redGL.renderScale = 0.5
+			redGL.renderScale = 1;
 			redGL.world = world;
 			renderer.world = redGL.world;
 			camL.autoUpdateMatrix = camR.autoUpdateMatrix = false;
@@ -30,12 +30,18 @@
 			camR.x = camR.y = camR.z = 10
 			camL.lookAt(0, 1, 0)
 			world.addView(RedView('left', scene, camL));
-			RedView('left').setSize('50%', '100%');
-			RedView('left').setLocation('0%', '0%');
-			world.addView(RedView('right', scene, camR));
-			RedView('right').setSize('50%', '100%');
-			RedView('right').setLocation('50%', '0%');
-			////
+      world.addView(RedView('right', scene, camR));
+      if(navigator.xr){
+        RedView('left').setSize('100%', '100%');
+        RedView('left').setLocation('0%', '0%');
+        RedView('right').setSize('100%', '100%');
+        RedView('right').setLocation('100%', '0%');
+      }else{
+        RedView('left').setSize('50%', '100%');
+        RedView('left').setLocation('0%', '0%');
+        RedView('right').setSize('50%', '100%');
+        RedView('right').setLocation('50%', '0%');
+      }
 			let tMat = RedEnvironmentMaterial(
 				redGL,
 				RedBitmapTexture(redGL, 'asset/crate.png'),
