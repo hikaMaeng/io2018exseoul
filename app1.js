@@ -1,15 +1,19 @@
 (_ => {
 	'use strict';
 	const polyfill = new WebXRPolyfill();
+	const cvs = document.createElement('canvas');
 	const xrButton = new XRDeviceButton({
 		onRequestSession: device => device.requestSession({exclusive: true}).then(session => {
 			xrButton.setSession(session);
-			session.addEventListener('end', e => xrButton.setSession(null));
+			session.addEventListener('end', e => {
+				xrButton.setSession(null)
+				cvs.style.display = 'none'
+			});
 			start(session);
 		}),
 		onEndSession: session => session.end()
 	});
-	[document.createElement('canvas'), xrButton.domElement].forEach(el => document.body.appendChild(el));
+	[cvs, xrButton.domElement].forEach(el => document.body.appendChild(el));
 	if ( navigator.xr ) {
 		navigator.xr.requestDevice()
 			.then(device => device.supportsSession({exclusive: true}).then(_ => xrButton.setDevice(device)));
@@ -17,11 +21,12 @@
 	const start = session => {
 		const start = isOK => {
 			if ( !isOK ) return console.log('error');
+			cvs.style.display = 'block'
 			const world = RedWorld();
 			const scene = RedScene(redGL);
 			const renderer = RedRenderer();
 			const camL = RedCamera(), camR = RedCamera();
-			redGL.renderScale = 1;
+			// redGL.renderScale = 0.5
 			redGL.world = world;
 			renderer.world = redGL.world;
 			camL.autoUpdateMatrix = camR.autoUpdateMatrix = false;
@@ -29,12 +34,15 @@
 			camL.lookAt(0, 1, 0)
 			camR.x = camR.y = camR.z = 10
 			camL.lookAt(0, 1, 0)
-			world.addView(RedView('left', scene, camL));
-			RedView('left').setSize('50%', '100%');
-			RedView('left').setLocation('0%', '0%');
-			world.addView(RedView('right', scene, camR));
-			RedView('right').setSize('50%', '100%');
-			RedView('right').setLocation('50%', '0%');
+			var tUUID = +RedGL.makeUUID()
+			var tLeftViewName = 'left' + tUUID
+			var tRightViewName = 'right' + tUUID
+			world.addView(RedView(tLeftViewName, scene, camL));
+			RedView(tLeftViewName).setSize('50%', '100%');
+			RedView(tLeftViewName).setLocation('0%', '0%');
+			world.addView(RedView('right' + tUUID, scene, camR));
+			RedView(tRightViewName).setSize('50%', '100%');
+			RedView(tRightViewName).setLocation('50%', '0%');
 			const setScene = function () {
 				let i = 10
 				let tMesh;
@@ -82,7 +90,7 @@
 							cam.perspectiveMTX = view.projectionMatrix;
 							cam.matrix = pose.getViewMatrix(view);
 						}
-						renderer.worldRender(redGL, t);
+						renderer.render(redGL, t);
 					}
 					session.requestAnimationFrame(onframe);
 				}
