@@ -44,8 +44,7 @@
 			RedView(tRightViewName).setSize('50%', '100%');
 			RedView(tRightViewName).setLocation('50%', '0%');
 			////
-			// scene['postEffectManager'].addEffect(RedPostEffect_Bloom(redGL))
-			// scene['postEffectManager'].addEffect(RedPostEffect_Gray(redGL))
+			scene['postEffectManager'].addEffect(RedPostEffect_Bloom(redGL))
 			let tMat = RedStandardMaterial(
 				redGL,
 				RedBitmapTexture(redGL, 'asset/crate.png'),
