@@ -224,9 +224,11 @@
 							const direction = [cam.matrix[7], cam.matrix[11], cam.matrix[15]]
 							vec3.normalize(direction, direction)
 							const locationMtx = mat4.create()
-							locationMtx[12] = prevPosition[0] + direction[0]/10
-							locationMtx[13] = prevPosition[1] + direction[1]/10
-							locationMtx[14] = prevPosition[2] + direction[2]/10
+							locationMtx[12] = prevPosition[0] + direction[0]
+							locationMtx[13] = prevPosition[1] + direction[1]
+							locationMtx[14] = prevPosition[2] + direction[2]
+
+
 
 							mat4.multiply(cam.matrix, locationMtx, cam.matrix)
 
