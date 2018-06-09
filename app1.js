@@ -26,6 +26,8 @@
 			const scene = RedScene(redGL);
 			const renderer = RedRenderer();
 			const camL = RedCamera(), camR = RedCamera();
+			camL.fov = 90
+			camR.fov = 90
 			redGL.world = world;
 			renderer.world = redGL.world;
 			camL.autoUpdateMatrix = camR.autoUpdateMatrix = false;
