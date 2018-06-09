@@ -68,10 +68,10 @@
 				let i = 1000
 				while ( i-- ) {
 					tMesh = RedMesh(redGL, tGeo, tMat)
-					tMesh.x = Math.random() * 100 - 50
-					tMesh.z = Math.random() * 100 - 50
-					tMesh.y = Math.random() * 100 - 50
-					tMesh.scaleX = tMesh.scaleY = tMesh.scaleZ = Math.random() * 2 + 1
+					tMesh.x = Math.random() * 1000 - 500
+					tMesh.z = Math.random() * 1000 - 500
+					tMesh.y = Math.random() * 1000 - 500
+					tMesh.scaleX = tMesh.scaleY = tMesh.scaleZ = Math.random() * 25 + 10
 					scene.addChild(tMesh)
 				}
 				// scene.grid = RedGrid(redGL);
