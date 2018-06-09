@@ -60,6 +60,12 @@
 			)
 			let tGeo = RedSphere(redGL, 0.1, 32, 32, 32)
 			let testParticle;
+      
+      const grip = RedMesh(redGL, tGeo, tMat);
+      scene.addChild(grip);
+      const gripGoal = RedMesh(redGL, tGeo, tMat);
+      scene.addChild(gripGoal);
+      
 			const setScene = function () {
 				let i = 10
 				let tMesh;
@@ -69,7 +75,7 @@
 				testDLight.y = 3
 				testDLight.z = 3
 				scene.addLight(testDLight)
-				while ( i-- ) {
+				while(i--){
 					tMesh = RedMesh(redGL, tGeo, tMat)
 					tMesh.x = Math.sin(Math.PI * 2 / 10 * i) * 3
 					tMesh.y = Math.cos(Math.PI * 2 / 10 * i) * 3
@@ -136,8 +142,21 @@
 							cam.perspectiveMTX = view.projectionMatrix;
 							cam.matrix = pose.getViewMatrix(view);
 						}
+            let inputSources = session.getInputSources();
+            for(let xrInputSource of inputSources){
+              let inputPose = frame.getInputPose(inputSource, xrFrameOfRef);
+              if(inputPose){
+                if (inputPose.gripMatrix) {
+                  grip.matrix = inputPose.gripMatrix;
+                }
+                if (inputPose.pointerMatrix) {
+                  gripGoal.matrix = inputPose.pointerMatrix;
+                }
+              }
+            }
 						renderer.render(redGL, t);
 					}
+          
 					tMat['displacementPower'] = Math.sin(t / 250) / 2
 					let i = scene.children.length
 					let tMesh;

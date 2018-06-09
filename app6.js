@@ -45,8 +45,8 @@
 			RedView(tRightViewName).setLocation('50%', '0%');
 			////
 			// scene['postEffectManager'].addEffect(RedPostEffect_Bloom(redGL))
-			const effect = RedPostEffect_Gray(redGL)
-			scene['postEffectManager'].addEffect(effect)
+			//const effect = RedPostEffect_Gray(redGL)
+			//scene['postEffectManager'].addEffect(effect)
 
 
 			let tMat = RedStandardMaterial(

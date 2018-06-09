@@ -1,6 +1,6 @@
-(_ => {
+(_=>{
 	'use strict';
-	const polyfill = new WebXRPolyfill();
+	const polyfill = navigator.xr ? null : new WebXRPolyfill();
 	const cvs = document.createElement('canvas');
 	const xrButton = new XRDeviceButton({
 		onRequestSession: device => device.requestSession({exclusive: true}).then(session => {
@@ -14,19 +14,18 @@
 		onEndSession: session => session.end()
 	});
 	[cvs, xrButton.domElement].forEach(el => document.body.appendChild(el));
-	if ( navigator.xr ) {
+	if(navigator.xr){
 		navigator.xr.requestDevice()
 			.then(device => device.supportsSession({exclusive: true}).then(_ => xrButton.setDevice(device)));
 	}
 	const start = session => {
 		const start = isOK => {
-			if ( !isOK ) return console.log('error');
+			if(!isOK) return console.log('error');
 			cvs.style.display = 'block'
 			const world = RedWorld();
 			const scene = RedScene(redGL);
 			const renderer = RedRenderer();
 			const camL = RedCamera(), camR = RedCamera();
-			// redGL.renderScale = 0.5
 			redGL.world = world;
 			renderer.world = redGL.world;
 			camL.autoUpdateMatrix = camR.autoUpdateMatrix = false;
