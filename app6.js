@@ -224,21 +224,7 @@
 							cam.perspectiveMTX = view.projectionMatrix;
 							cam.matrix = pose.getViewMatrix(view);
 
-							const direction = [cam.matrix[7], cam.matrix[11], cam.matrix[15]]
-							vec3.normalize(direction, direction)
-							const locationMtx = mat4.create()
-							const tPrevPosition = viewport.x == 0 ? prevPositionL : prevPositionR;
-							locationMtx[12] = tPrevPosition[0] + direction[0]
-							locationMtx[13] = tPrevPosition[1] + direction[1]
-							locationMtx[14] = tPrevPosition[2] + direction[2]
-
-
-
-							mat4.multiply(cam.matrix, locationMtx, cam.matrix)
-
-							tPrevPosition[0] = cam.matrix[12]
-							tPrevPosition[1] = cam.matrix[13]
-							tPrevPosition[2] = cam.matrix[14]
+						
 						}
 
 
@@ -261,28 +247,19 @@
 						renderer.render(redGL, t);
 					}
 
-					tMat['displacementPower'] = Math.sin(t / 250) * 15
+					tMat['displacementPower'] = Math.sin(t / 250) /2
+					tMat2['displacementPower'] = Math.sin(t / 250) * 25
 					let i = scene.children.length
-					let tMesh, tMeshPosition;
+					let tMesh;
 					while (i--) {
 						tMesh = scene.children[i]
 						if (testParticle == tMesh) {
 							tMesh.rotationX += 0.01
 							tMesh.rotationY += 0.01
 							tMesh.rotationZ += 0.01
-							tMesh.x = prevPositionL[0]
-							tMesh.y = prevPositionL[1]
-							tMesh.z = prevPositionL[2]
 
 						} else {
-							tMeshPosition = [prevPositionL[0] - tMesh.x, prevPositionL[1] - tMesh.y, prevPositionL[2] + tMesh.z]
-							const tLength = Math.abs(Math.sqrt(tMeshPosition[0] * tMeshPosition[0] + tMeshPosition[1] * tMeshPosition[1] + tMeshPosition[2] * tMeshPosition[2]))
-							const targetDistance = 400
-							if (tLength > targetDistance) {
-								tMesh.x = Math.random() * targetDistance - targetDistance/2 + prevPositionL[0]
-								tMesh.y = Math.random() * targetDistance - targetDistance/2 + prevPositionL[1]
-								tMesh.z = Math.random() * targetDistance - targetDistance/2 - prevPositionL[2]
-							}
+							
 
 							tMesh.rotationX += 1
 							tMesh.rotationY += 1
