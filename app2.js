@@ -1,11 +1,11 @@
 (_ => {
 	'use strict';
-	const log=v=>{
+	const log = v => {
 		const div = document.createElement('div');
 		div.innerHTML = v;
 		div.style.cssText = 'position:absolute;top:0px;left:0px;z-index:10;background:#fff'
 		document.body.appendChild(div);
-	  }
+	}
 	const polyfill = new WebXRPolyfill();
 	const cvs = document.createElement('canvas');
 	const xrButton = new XRDeviceButton({
@@ -138,10 +138,10 @@
 			setScene()
 			redGL.fullMode = false
 			session.baseLayer = new XRWebGLLayer(session, redGL.gl);
-			log(session.getInputSources)
-		
+
+
 			const se = session
-			
+
 			session.requestFrameOfReference('eyeLevel').then(frameOfRef => {
 				const onframe = (t, frame) => {
 					const session = frame.session;
@@ -159,30 +159,28 @@
 							cam.perspectiveMTX = view.projectionMatrix;
 							cam.matrix = pose.getViewMatrix(view);
 						}
-						
-						
-							let inputSources = se.getInputSources();
-							log(inputSources)
-							for (let xrInputSource of inputSources) {
-								let inputPose = frame.getInputPose(xrInputSource, frameOfRef);
-								if (inputPose) {
-									if (inputPose.gripMatrix) {
-										grip.matrix = inputPose.gripMatrix;
-									}
-									if (inputPose.pointerMatrix) {
-										gripGoal.matrix = inputPose.pointerMatrix;
-									}
-									// 
+
+
+						let inputSources = se.getInputSources();
+						for (let xrInputSource of inputSources) {
+							let inputPose = frame.getInputPose(xrInputSource, frameOfRef);
+							if (inputPose) {
+								if (inputPose.gripMatrix) {
+									grip.matrix = inputPose.gripMatrix;
+								}
+								if (inputPose.pointerMatrix) {
+									gripGoal.matrix = inputPose.pointerMatrix;
 								}
 							}
-						
+						}
+
 						line.removeAllPoint()
 						line.addPoint(grip.matrix[12], grip.matrix[13], grip.matrix[14])
 						line.addPoint(gripGoal.matrix[12], gripGoal.matrix[13], gripGoal.matrix[14])
 						renderer.render(redGL, t);
 					}
 
-					// tMat['displacementPower'] = Math.sin(t / 250) / 2
+					tMat['displacementPower'] = Math.sin(t / 250) / 2
 					let i = scene.children.length
 					let tMesh;
 					while (i--) {
