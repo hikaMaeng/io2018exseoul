@@ -56,11 +56,11 @@
 				RedBitmapTexture(redGL, 'asset/crate.png'),
 				RedBitmapCubeTexture(redGL, [
 					'asset/cubemap/posx.png',
-						'asset/cubemap/negx.png',
-						'asset/cubemap/posy.png',
-						'asset/cubemap/negy.png',
-						'asset/cubemap/negz.png',
-						'asset/cubemap/posz.png'
+					'asset/cubemap/negx.png',
+					'asset/cubemap/posy.png',
+					'asset/cubemap/negy.png',
+					'asset/cubemap/negz.png',
+					'asset/cubemap/posz.png'
 				])
 				, RedBitmapTexture(redGL, 'asset/normalTest.jpg')
 				, RedBitmapTexture(redGL, 'asset/specular.png')
@@ -179,23 +179,23 @@
 
 				i = 200
 				while (i--) {
-					tMesh = RedMesh(redGL, tGeo2, tMat2)
+					tMesh = RedMesh(redGL, tGeo2, tMat)
 					tMesh.x = Math.random() * 1000 - 500
 					tMesh.z = Math.random() * 1000 - 500
 					tMesh.y = Math.random() * 1000 - 500
-					tMesh.scaleX = tMesh.scaleY = tMesh.scaleZ = Math.random() * 25 + 10
+					tMesh.scaleX = tMesh.scaleY = tMesh.scaleZ = 10
 					scene.addChild(tMesh)
 				}
 
-		
+
 				scene.skyBox =
 					RedSkyBox(redGL, [
 						'asset/cubemap/posx.png',
 						'asset/cubemap/negx.png',
 						'asset/cubemap/posy.png',
 						'asset/cubemap/negy.png',
-						'asset/cubemap/posz.png',
-						'asset/cubemap/negz.png'
+						'asset/cubemap/negz.png',
+						'asset/cubemap/posz.png'
 					]);
 			}
 			setScene()
@@ -205,7 +205,8 @@
 
 			const se = session
 
-			let prevPosition = [0, 0, 0]
+			let prevPositionL = [0, 0, 0]
+			let prevPositionR = [0, 0, 0]
 			session.requestFrameOfReference('eyeLevel').then(frameOfRef => {
 				const onframe = (t, frame) => {
 					const session = frame.session;
@@ -226,17 +227,18 @@
 							const direction = [cam.matrix[7], cam.matrix[11], cam.matrix[15]]
 							vec3.normalize(direction, direction)
 							const locationMtx = mat4.create()
-							locationMtx[12] = prevPosition[0] + direction[0]
-							locationMtx[13] = prevPosition[1] + direction[1]
-							locationMtx[14] = prevPosition[2] + direction[2]
+							const tPrevPosition = viewport.x == 0 ? prevPositionL : prevPositionR;
+							locationMtx[12] = tPrevPosition[0] + direction[0]
+							locationMtx[13] = tPrevPosition[1] + direction[1]
+							locationMtx[14] = tPrevPosition[2] + direction[2]
 
 
 
 							mat4.multiply(cam.matrix, locationMtx, cam.matrix)
 
-							prevPosition[0] = cam.matrix[12]
-							prevPosition[1] = cam.matrix[13]
-							prevPosition[2] = cam.matrix[14]
+							tPrevPosition[0] = cam.matrix[12]
+							tPrevPosition[1] = cam.matrix[13]
+							tPrevPosition[2] = cam.matrix[14]
 						}
 
 
@@ -259,16 +261,29 @@
 						renderer.render(redGL, t);
 					}
 
-					tMat['displacementPower'] = Math.sin(t / 250) / 2
+					tMat['displacementPower'] = Math.sin(t / 250) * 15
 					let i = scene.children.length
-					let tMesh;
+					let tMesh, tMeshPosition;
 					while (i--) {
 						tMesh = scene.children[i]
 						if (testParticle == tMesh) {
 							tMesh.rotationX += 0.01
 							tMesh.rotationY += 0.01
 							tMesh.rotationZ += 0.01
+							tMesh.x = prevPositionL[0]
+							tMesh.y = prevPositionL[1]
+							tMesh.z = prevPositionL[2]
+
 						} else {
+							tMeshPosition = [prevPositionL[0] - tMesh.x, prevPositionL[1] - tMesh.y, prevPositionL[2] + tMesh.z]
+							const tLength = Math.abs(Math.sqrt(tMeshPosition[0] * tMeshPosition[0] + tMeshPosition[1] * tMeshPosition[1] + tMeshPosition[2] * tMeshPosition[2]))
+							const targetDistance = 400
+							if (tLength > targetDistance) {
+								tMesh.x = Math.random() * targetDistance - targetDistance/2 + prevPositionL[0]
+								tMesh.y = Math.random() * targetDistance - targetDistance/2 + prevPositionL[1]
+								tMesh.z = Math.random() * targetDistance - targetDistance/2 - prevPositionL[2]
+							}
+
 							tMesh.rotationX += 1
 							tMesh.rotationY += 1
 							tMesh.rotationZ += 1
