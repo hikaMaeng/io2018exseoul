@@ -3,7 +3,7 @@
 	const polyfill = new WebXRPolyfill();
 	const cvs = document.createElement('canvas');
 	const xrButton = new XRDeviceButton({
-		onRequestSession: device => device.requestSession({exclusive: true}).then(session => {
+		onRequestSession: device => device.requestSession({ exclusive: true }).then(session => {
 			xrButton.setSession(session);
 			session.addEventListener('end', e => {
 				xrButton.setSession(null)
@@ -14,13 +14,13 @@
 		onEndSession: session => session.end()
 	});
 	[cvs, xrButton.domElement].forEach(el => document.body.appendChild(el));
-	if ( navigator.xr ) {
+	if (navigator.xr) {
 		navigator.xr.requestDevice()
-			.then(device => device.supportsSession({exclusive: true}).then(_ => xrButton.setDevice(device)));
+			.then(device => device.supportsSession({ exclusive: true }).then(_ => xrButton.setDevice(device)));
 	}
 	const start = session => {
 		const start = isOK => {
-			if ( !isOK ) return console.log('error');
+			if (!isOK) return console.log('error');
 			cvs.style.display = 'block'
 			const world = RedWorld();
 			const scene = RedScene(redGL);
@@ -60,12 +60,19 @@
 			)
 			let tGeo = RedSphere(redGL, 0.1, 32, 32, 32)
 			let testParticle;
-      
-      const grip = RedMesh(redGL, tGeo, tMat);
-      scene.addChild(grip);
-      const gripGoal = RedMesh(redGL, tGeo, tMat);
-      scene.addChild(gripGoal);
-      
+
+			const grip = RedMesh(redGL, RedSphere(redGL, 0.3, 32, 32, 32), RedColorPhongMaterial(redGL));
+			grip['autoUpdateMatrix'] = false
+			scene.addChild(grip);
+			const gripGoal = RedMesh(redGL, tGeo, RedColorPhongMaterial(redGL, '#00ff00'));
+			gripGoal['autoUpdateMatrix'] = false
+			scene.addChild(gripGoal);
+
+			const line = RedLine(redGL, RedColorMaterial(redGL))
+			scene.addChild(line)
+			line.drawMode = redGL.gl.LINES
+
+
 			const setScene = function () {
 				let i = 10
 				let tMesh;
@@ -75,7 +82,7 @@
 				testDLight.y = 3
 				testDLight.z = 3
 				scene.addLight(testDLight)
-				while(i--){
+				while (i--) {
 					tMesh = RedMesh(redGL, tGeo, tMat)
 					tMesh.x = Math.sin(Math.PI * 2 / 10 * i) * 3
 					tMesh.y = Math.cos(Math.PI * 2 / 10 * i) * 3
@@ -92,17 +99,17 @@
 					testMaterial = RedPointBitmapMaterial(redGL, RedBitmapTexture(redGL, 'asset/particle.png'))
 					interleaveData = []
 					let i = 100000
-					while ( i-- ) {
+					while (i--) {
 						interleaveData.push(Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50)
-						interleaveData.push( Math.random() * 50 )
+						interleaveData.push(Math.random() * 50)
 					}
 					interleaveData = new Float32Array(interleaveData)
 					testParticle = RedPointUnit(
 						redGL,
 						interleaveData,
 						[
-							RedInterleaveInfo( 'aVertexPosition', 3 ),
-							RedInterleaveInfo( 'aPointSize', 1 )
+							RedInterleaveInfo('aVertexPosition', 3),
+							RedInterleaveInfo('aPointSize', 1)
 						],
 						testMaterial
 					)
@@ -130,10 +137,10 @@
 					const session = frame.session;
 					const pose = frame.getDevicePose(frameOfRef);
 					t = performance.now()
-					if ( pose ) {
+					if (pose) {
 						redGL.gl.bindFramebuffer(redGL.gl.FRAMEBUFFER, session.baseLayer.framebuffer);
 						redGL.gl.clear(redGL.gl.COLOR_BUFFER_BIT | redGL.gl.DEPTH_BUFFER_BIT);
-						for ( const view of frame.views ) {
+						for (const view of frame.views) {
 							const viewport = session.baseLayer.getViewport(view);
 							const cam = viewport.x == 0 ? camL : camR;
 							const viewName = viewport.x == 0 ? tLeftViewName : tRightViewName
@@ -142,29 +149,35 @@
 							cam.perspectiveMTX = view.projectionMatrix;
 							cam.matrix = pose.getViewMatrix(view);
 						}
-            let inputSources = session.getInputSources();
-            for(let xrInputSource of inputSources){
-              let inputPose = frame.getInputPose(inputSource, xrFrameOfRef);
-              if(inputPose){
-                if (inputPose.gripMatrix) {
-                  grip.matrix = inputPose.gripMatrix;
-                }
-                if (inputPose.pointerMatrix) {
-                  gripGoal.matrix = inputPose.pointerMatrix;
-                }
-              }
-            }
+						let inputSources = session.getInputSources();
+						for (let xrInputSource of inputSources) {
+							let inputPose = frame.getInputPose(inputSource, xrFrameOfRef);
+							if (inputPose) {
+								if (inputPose.gripMatrix) {
+									grip.matrix = inputPose.gripMatrix;
+								}
+								if (inputPose.pointerMatrix) {
+									gripGoal.matrix = inputPose.pointerMatrix;
+								}
+								// 
+
+
+							}
+						}
+						line.removeAllPoint()
+						line.addPoint(grip.matrix[12], grip.matrix[13], grip.matrix[14])
+						line.addPoint(gripGoal.matrix[12], gripGoal.matrix[13], gripGoal.matrix[14])
 						renderer.render(redGL, t);
 					}
-          
-					tMat['displacementPower'] = Math.sin(t / 250) / 2
+
+					// tMat['displacementPower'] = Math.sin(t / 250) / 2
 					let i = scene.children.length
 					let tMesh;
-					while ( i-- ) {
+					while (i--) {
 						tMesh = scene.children[i]
-						if(tMesh == testParticle){
+						if (tMesh == grip || tMesh == gripGoal || tMesh == line) {
 
-						}else{
+						} else {
 							tMesh.rotationX += 1
 							tMesh.rotationY += 1
 							tMesh.rotationZ += 1
@@ -176,6 +189,6 @@
 				session.requestAnimationFrame(onframe);
 			});
 		};
-		const redGL = RedGL(document.querySelector('canvas'), start, {compatibleXRDevice: session.device});
+		const redGL = RedGL(document.querySelector('canvas'), start, { compatibleXRDevice: session.device });
 	};
 })();
