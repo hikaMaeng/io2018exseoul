@@ -98,8 +98,8 @@
 						'asset/cubemap/negx.png',
 						'asset/cubemap/posy.png',
 						'asset/cubemap/negy.png',
-						'asset/cubemap/posz.png',
-						'asset/cubemap/negz.png'
+						'asset/cubemap/negz.png',
+						'asset/cubemap/posz.png'
 					]);
 			}
 			setScene()

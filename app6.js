@@ -56,11 +56,11 @@
 				RedBitmapTexture(redGL, 'asset/crate.png'),
 				RedBitmapCubeTexture(redGL, [
 					'asset/cubemap/posx.png',
-					'asset/cubemap/negx.png',
-					'asset/cubemap/posy.png',
-					'asset/cubemap/negy.png',
-					'asset/cubemap/posz.png',
-					'asset/cubemap/negz.png'
+						'asset/cubemap/negx.png',
+						'asset/cubemap/posy.png',
+						'asset/cubemap/negy.png',
+						'asset/cubemap/negz.png',
+						'asset/cubemap/posz.png'
 				])
 				, RedBitmapTexture(redGL, 'asset/normalTest.jpg')
 				, RedBitmapTexture(redGL, 'asset/specular.png')

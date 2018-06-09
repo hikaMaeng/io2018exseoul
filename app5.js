@@ -48,22 +48,12 @@
 			////
 			// scene['postEffectManager'].addEffect(RedPostEffect_Bloom(redGL))
 			// scene['postEffectManager'].addEffect(RedPostEffect_Gray(redGL))
-			let tMat = RedEnvironmentMaterial(
+			let tMat = RedStandardMaterial(
 				redGL,
 				RedBitmapTexture(redGL, 'asset/crate.png'),
-				RedBitmapCubeTexture(redGL, [
-					'asset/cubemap/posx.png',
-					'asset/cubemap/negx.png',
-					'asset/cubemap/posy.png',
-					'asset/cubemap/negy.png',
-					'asset/cubemap/posz.png',
-					'asset/cubemap/negz.png'
-				])
-				, RedBitmapTexture(redGL, 'asset/normalTest.jpg')
-				, RedBitmapTexture(redGL, 'asset/specular.png')
-				, RedBitmapTexture(redGL, 'asset/displacementTest.jpg')
+				RedBitmapTexture(redGL, 'asset/normalTest.jpg')
 			)
-			let tGeo = RedSphere(redGL, 1, 24, 24, 24)
+			let tGeo = RedBox(redGL, 1,1,1)
 			let testDLight;
 			const setScene = function () {
 				let tMesh;
@@ -81,19 +71,19 @@
 				let i;
 
 				i = 5
-				while (i--) {
-					let testLight
-					if (i == 4) testLight = RedPointLight(redGL, '#ff00ff')
-					if (i == 3) testLight = RedPointLight(redGL, '#00ff00')
-					if (i == 2) testLight = RedPointLight(redGL, '#224466')
-					if (i == 1) testLight = RedPointLight(redGL, '#1188ee')
-					if (i == 0) testLight = RedPointLight(redGL, '#ff3399')
+				// while (i--) {
+				// 	let testLight
+				// 	if (i == 4) testLight = RedPointLight(redGL, '#ff00ff')
+				// 	if (i == 3) testLight = RedPointLight(redGL, '#00ff00')
+				// 	if (i == 2) testLight = RedPointLight(redGL, '#224466')
+				// 	if (i == 1) testLight = RedPointLight(redGL, '#1188ee')
+				// 	if (i == 0) testLight = RedPointLight(redGL, '#ff3399')
 
-					testLight.radius = Math.random() * 100 + 100
-					testLight.debug = true
+				// 	testLight.radius = Math.random() * 100 + 100
+				// 	testLight.debug = true
 
-					scene.addLight(testLight);
-				}
+				// 	scene.addLight(testLight);
+				// }
 
 				i = 2000
 				while (i--) {
@@ -111,8 +101,8 @@
 						'asset/cubemap/negx.png',
 						'asset/cubemap/posy.png',
 						'asset/cubemap/negy.png',
-						'asset/cubemap/posz.png',
-						'asset/cubemap/negz.png'
+						'asset/cubemap/negz.png',
+						'asset/cubemap/posz.png'
 					]);
 			}
 			setScene()
@@ -147,7 +137,7 @@
 						}
 						renderer.render(redGL, t);
 					}
-					tMat['displacementPower'] = Math.sin(t / 250) *15
+					// tMat['displacementPower'] = Math.sin(t / 250) *15
 					let i = scene.children.length
 					let tMesh;
 					while (i--) {
