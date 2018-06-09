@@ -177,11 +177,11 @@
 				scene.addChild(tMesh);
 
 
-				i = 200
+				i = 1000
 				while (i--) {
 					tMesh = RedMesh(redGL, tGeo2, tMat)
 					tMesh.x = Math.random() * 1000 - 500
-					tMesh.z = Math.random() * 1000 - 500
+					tMesh.z = -Math.random() * 3000-100
 					tMesh.y = Math.random() * 1000 - 500
 					tMesh.scaleX = tMesh.scaleY = tMesh.scaleZ = 10
 					scene.addChild(tMesh)
