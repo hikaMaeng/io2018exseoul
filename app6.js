@@ -75,16 +75,16 @@
 			let tGeo2 = RedSphere(redGL, 1, 32, 32, 32)
 			let testParticle;
 
-			const grip = RedMesh(redGL, RedSphere(redGL, 0.3, 32, 32, 32), RedColorPhongMaterial(redGL));
-			grip['autoUpdateMatrix'] = false
-			scene.addChild(grip);
-			const gripGoal = RedMesh(redGL, tGeo, RedColorPhongMaterial(redGL, '#00ff00'));
-			gripGoal['autoUpdateMatrix'] = false
-			scene.addChild(gripGoal);
+			// const grip = RedMesh(redGL, RedSphere(redGL, 0.3, 32, 32, 32), RedColorPhongMaterial(redGL));
+			// grip['autoUpdateMatrix'] = false
+			// scene.addChild(grip);
+			// const gripGoal = RedMesh(redGL, tGeo, RedColorPhongMaterial(redGL, '#00ff00'));
+			// gripGoal['autoUpdateMatrix'] = false
+			// scene.addChild(gripGoal);
 
-			const line = RedLine(redGL, RedColorMaterial(redGL))
-			scene.addChild(line)
-			line.drawMode = redGL.gl.LINES
+			// const line = RedLine(redGL, RedColorMaterial(redGL))
+			// scene.addChild(line)
+			// line.drawMode = redGL.gl.LINES
 
 			const setScene = function () {
 				let i = 10
@@ -219,35 +219,51 @@
 							const viewport = session.baseLayer.getViewport(view);
 							const cam = viewport.x == 0 ? camL : camR;
 							const viewName = viewport.x == 0 ? tLeftViewName : tRightViewName
+							const tLastPosition = viewport.x == 0 ? prevPositionL : prevPositionR
 							RedView(viewName).setSize(viewport.width, viewport.height)
 							RedView(viewName).setLocation(viewport.x, viewport.y)
 							cam.perspectiveMTX = view.projectionMatrix;
 							cam.matrix = pose.getViewMatrix(view);
 
+							let displacementVec3 = [0, 0, 1]
+							let moveMTX = mat4.create();
+							mat4.translate(moveMTX, moveMTX, displacementVec3)
+							mat4.multiply(moveMTX, moveMTX, pose.getViewMatrix(view))
+						
+														
+							tLastPosition[0] += moveMTX[12]
+							tLastPosition[1] += moveMTX[13]
+							tLastPosition[2] += moveMTX[14]
+
+							let moveMTX2 = mat4.create();
+							mat4.translate(moveMTX2, moveMTX2, tLastPosition)
+							mat4.multiply(moveMTX2, moveMTX2, pose.getViewMatrix(view))
+
+							cam.matrix = moveMTX2
 						
 						}
 
 
-						let inputSources = se.getInputSources();
-						for (let xrInputSource of inputSources) {
-							let inputPose = frame.getInputPose(xrInputSource, frameOfRef);
-							if (inputPose) {
-								if (inputPose.gripMatrix) {
-									grip.matrix = inputPose.gripMatrix;
-								}
-								if (inputPose.pointerMatrix) {
-									gripGoal.matrix = inputPose.pointerMatrix;
-								}
-							}
-						}
+						// let inputSources = se.getInputSources();
+						// for (let xrInputSource of inputSources) {
+						// 	let inputPose = frame.getInputPose(xrInputSource, frameOfRef);
+						// 	if (inputPose) {
+						// 		if (inputPose.gripMatrix) {
+						// 			grip.matrix = inputPose.gripMatrix;
+						// 		}
+						// 		if (inputPose.pointerMatrix) {
+						// 			gripGoal.matrix = inputPose.pointerMatrix;
+						// 		}
+						// 	}
+						// }
 
-						line.removeAllPoint()
-						line.addPoint(grip.matrix[12], grip.matrix[13], grip.matrix[14])
-						line.addPoint(gripGoal.matrix[12], gripGoal.matrix[13], gripGoal.matrix[14])
+						// line.removeAllPoint()
+						// line.addPoint(grip.matrix[12], grip.matrix[13], grip.matrix[14])
+						// line.addPoint(gripGoal.matrix[12], gripGoal.matrix[13], gripGoal.matrix[14])
 						renderer.render(redGL, t);
 					}
 
-					tMat['displacementPower'] = Math.sin(t / 250) /2
+					tMat['displacementPower'] = Math.sin(t / 250) / 2
 					tMat2['displacementPower'] = Math.sin(t / 250) * 25
 					let i = scene.children.length
 					let tMesh;
@@ -259,7 +275,7 @@
 							tMesh.rotationZ += 0.01
 
 						} else {
-							
+
 
 							tMesh.rotationX += 1
 							tMesh.rotationY += 1

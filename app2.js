@@ -69,16 +69,16 @@
 			let tGeo = RedSphere(redGL, 0.1, 32, 32, 32)
 			let testParticle;
 
-			const grip = RedMesh(redGL, RedSphere(redGL, 0.3, 32, 32, 32), RedColorPhongMaterial(redGL));
-			grip['autoUpdateMatrix'] = false
-			scene.addChild(grip);
-			const gripGoal = RedMesh(redGL, tGeo, RedColorPhongMaterial(redGL, '#00ff00'));
-			gripGoal['autoUpdateMatrix'] = false
-			scene.addChild(gripGoal);
+			// const grip = RedMesh(redGL, RedSphere(redGL, 0.3, 32, 32, 32), RedColorPhongMaterial(redGL));
+			// grip['autoUpdateMatrix'] = false
+			// scene.addChild(grip);
+			// const gripGoal = RedMesh(redGL, tGeo, RedColorPhongMaterial(redGL, '#00ff00'));
+			// gripGoal['autoUpdateMatrix'] = false
+			// scene.addChild(gripGoal);
 
-			const line = RedLine(redGL, RedColorMaterial(redGL))
-			scene.addChild(line)
-			line.drawMode = redGL.gl.LINES
+			// const line = RedLine(redGL, RedColorMaterial(redGL))
+			// scene.addChild(line)
+			// line.drawMode = redGL.gl.LINES
 
 
 			const setScene = function () {
@@ -163,22 +163,22 @@
 						}
 
 
-						let inputSources = se.getInputSources();
-						for (let xrInputSource of inputSources) {
-							let inputPose = frame.getInputPose(xrInputSource, frameOfRef);
-							if (inputPose) {
-								if (inputPose.gripMatrix) {
-									grip.matrix = inputPose.gripMatrix;
-								}
-								if (inputPose.pointerMatrix) {
-									gripGoal.matrix = inputPose.pointerMatrix;
-								}
-							}
-						}
+						// let inputSources = se.getInputSources();
+						// for (let xrInputSource of inputSources) {
+						// 	let inputPose = frame.getInputPose(xrInputSource, frameOfRef);
+						// 	if (inputPose) {
+						// 		if (inputPose.gripMatrix) {
+						// 			grip.matrix = inputPose.gripMatrix;
+						// 		}
+						// 		if (inputPose.pointerMatrix) {
+						// 			gripGoal.matrix = inputPose.pointerMatrix;
+						// 		}
+						// 	}
+						// }
 
-						line.removeAllPoint()
-						line.addPoint(grip.matrix[12], grip.matrix[13], grip.matrix[14])
-						line.addPoint(gripGoal.matrix[12], gripGoal.matrix[13], gripGoal.matrix[14])
+						// line.removeAllPoint()
+						// line.addPoint(grip.matrix[12], grip.matrix[13], grip.matrix[14])
+						// line.addPoint(gripGoal.matrix[12], gripGoal.matrix[13], gripGoal.matrix[14])
 						renderer.render(redGL, t);
 					}
 
@@ -187,13 +187,16 @@
 					let tMesh;
 					while (i--) {
 						tMesh = scene.children[i]
-						if (tMesh == grip || tMesh == gripGoal || tMesh == line) {
+						// if (tMesh == grip || tMesh == gripGoal || tMesh == line) {
 
-						} else {
-							tMesh.rotationX += 1
-							tMesh.rotationY += 1
-							tMesh.rotationZ += 1
-						}
+						// } else {
+						// 	tMesh.rotationX += 1
+						// 	tMesh.rotationY += 1
+						// 	tMesh.rotationZ += 1
+						// }
+						tMesh.rotationX += 1
+						tMesh.rotationY += 1
+						tMesh.rotationZ += 1
 
 					}
 					session.requestAnimationFrame(onframe);
